@@ -123,13 +123,15 @@ static bool modemResolveHost(const char *host, String &ip)
         return false;
     }
 
-    // The URC may still be arriving after the first marker.
+    // modemReadUntil() returns as soon as the URC marker appears. Keep reading
+    // until the whole +CDNSGIP line has arrived before parsing the quoted IP.
     const uint32_t extraStarted = millis();
-    while (millis() - extraStarted < 1500) {
+    while (millis() - extraStarted < 2000) {
         while (Serial1.available()) {
             response += (char)Serial1.read();
         }
-        if (response.indexOf("\r\n") >= 0 && response.indexOf("+CDNSGIP: 1") >= 0) break;
+        const int marker = response.indexOf("+CDNSGIP:");
+        if (marker >= 0 && response.indexOf("\r\n", marker) >= 0) break;
         delay(1);
     }
 
