@@ -1,0 +1,8 @@
+config.h
+*.uf2
+*.elf
+*.bin
+build/
+.pio/
+.vscode/
+.DS_Store
